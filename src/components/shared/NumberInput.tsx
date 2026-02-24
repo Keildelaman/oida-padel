@@ -1,3 +1,5 @@
+import { useState, useEffect, useRef } from 'react'
+
 interface NumberInputProps {
   value: number
   onChange: (value: number) => void
@@ -8,6 +10,21 @@ interface NumberInputProps {
 }
 
 export function NumberInput({ value, onChange, min, max, label, className = '' }: NumberInputProps) {
+  const [displayValue, setDisplayValue] = useState(String(value))
+  const isFocusedRef = useRef(false)
+
+  useEffect(() => {
+    if (!isFocusedRef.current) {
+      setDisplayValue(String(value))
+    }
+  }, [value])
+
+  const clamp = (v: number) => {
+    if (min != null && v < min) return min
+    if (max != null && v > max) return max
+    return v
+  }
+
   const decrement = () => {
     if (min != null && value <= min) return
     onChange(value - 1)
@@ -18,21 +35,23 @@ export function NumberInput({ value, onChange, min, max, label, className = '' }
     onChange(value + 1)
   }
 
-  const clamp = (v: number) => {
-    if (min != null && v < min) return min
-    if (max != null && v > max) return max
-    return v
-  }
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value
+    setDisplayValue(raw)
     if (raw === '') return
     const parsed = parseInt(raw, 10)
     if (!isNaN(parsed)) onChange(clamp(parsed))
   }
 
+  const handleFocus = () => {
+    isFocusedRef.current = true
+  }
+
   const handleBlur = () => {
-    onChange(clamp(value))
+    isFocusedRef.current = false
+    const clamped = clamp(displayValue === '' ? (min ?? 0) : value)
+    onChange(clamped)
+    setDisplayValue(String(clamped))
   }
 
   return (
@@ -49,8 +68,9 @@ export function NumberInput({ value, onChange, min, max, label, className = '' }
         </button>
         <input
           type="number"
-          value={value}
+          value={displayValue}
           onChange={handleChange}
+          onFocus={handleFocus}
           onBlur={handleBlur}
           min={min}
           max={max}
