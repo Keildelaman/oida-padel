@@ -56,13 +56,13 @@ export function NumberInput({ value, onChange, min, max, label, className = '' }
 
   return (
     <div className={className}>
-      {label && <label className="block text-sm font-semibold text-text mb-1">{label}</label>}
+      {label && <label className="block text-lg font-bold text-text mb-2">{label}</label>}
       <div className="flex items-center gap-2">
         <button
           type="button"
           onClick={decrement}
           disabled={min != null && value <= min}
-          className="w-10 h-10 rounded-lg bg-surface-alt border border-border flex items-center justify-center text-lg font-bold text-text hover:bg-[#2a3a30] hover:border-primary/40 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          className="w-12 h-12 rounded-lg bg-surface-alt border border-border flex items-center justify-center text-xl font-bold text-text hover:bg-[#2a3a30] hover:border-primary/40 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
         >
           -
         </button>
@@ -74,13 +74,13 @@ export function NumberInput({ value, onChange, min, max, label, className = '' }
           onBlur={handleBlur}
           min={min}
           max={max}
-          className="w-16 h-10 text-center text-lg font-semibold tabular-nums border border-border rounded-lg bg-surface-input text-text focus:outline-none focus:border-border-focus focus:ring-1 focus:ring-border-focus [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          className="w-20 h-12 text-center text-xl font-semibold tabular-nums border border-border rounded-lg bg-surface-input text-text focus:outline-none focus:border-border-focus focus:ring-1 focus:ring-border-focus [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         />
         <button
           type="button"
           onClick={increment}
           disabled={max != null && value >= max}
-          className="w-10 h-10 rounded-lg bg-surface-alt border border-border flex items-center justify-center text-lg font-bold text-text hover:bg-[#2a3a30] hover:border-primary/40 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          className="w-12 h-12 rounded-lg bg-surface-alt border border-border flex items-center justify-center text-xl font-bold text-text hover:bg-[#2a3a30] hover:border-primary/40 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
         >
           +
         </button>

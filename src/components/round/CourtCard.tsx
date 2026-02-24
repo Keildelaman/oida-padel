@@ -54,6 +54,7 @@ export function CourtCard({
         score1={match.score1}
         score2={match.score2}
         pickerMax={pickerMax}
+        targetScore={scoringConfig.mode === 'pointsToWin' ? pickerMax : undefined}
         onSetScore={onSetScore}
         onClearScore={onClearScore}
         disabled={disabled}
@@ -288,7 +289,7 @@ function PointsCourtLayout({
 
 function IndependentScoreCourtLayout({
   team1Name1, team1Name2, team2Name1, team2Name2,
-  courtLabel, score1, score2, pickerMax,
+  courtLabel, score1, score2, pickerMax, targetScore,
   onSetScore, onClearScore, disabled,
 }: {
   team1Name1: string; team1Name2: string
@@ -296,6 +297,7 @@ function IndependentScoreCourtLayout({
   courtLabel: string
   score1?: number; score2?: number
   pickerMax: number
+  targetScore?: number // when set, prevents both teams from reaching this score
   onSetScore: (score1: number, score2: number) => void
   onClearScore: () => void
   disabled?: boolean
@@ -308,6 +310,10 @@ function IndependentScoreCourtLayout({
     setText2(score2 != null ? String(score2) : '')
   }, [score1, score2])
 
+  // Dynamic max: if the other team hit the target, cap this team below it
+  const max1 = targetScore != null && score2 === targetScore ? targetScore - 1 : pickerMax
+  const max2 = targetScore != null && score1 === targetScore ? targetScore - 1 : pickerMax
+
   const handleChange1 = (raw: string) => {
     const digits = raw.replace(/[^0-9]/g, '')
     if (digits === '') {
@@ -316,9 +322,13 @@ function IndependentScoreCourtLayout({
       onClearScore()
       return
     }
-    const s1 = Math.max(0, parseInt(digits, 10))
+    const s1 = Math.max(0, Math.min(max1, parseInt(digits, 10)))
     setText1(String(s1))
-    onSetScore(s1, score2 ?? 0)
+    // If s1 hits target, clamp s2 below target
+    const s2 = targetScore != null && s1 === targetScore && (score2 ?? 0) >= targetScore
+      ? targetScore - 1
+      : score2 ?? 0
+    onSetScore(s1, s2)
   }
 
   const handleChange2 = (raw: string) => {
@@ -329,9 +339,13 @@ function IndependentScoreCourtLayout({
       onClearScore()
       return
     }
-    const s2 = Math.max(0, parseInt(digits, 10))
+    const s2 = Math.max(0, Math.min(max2, parseInt(digits, 10)))
     setText2(String(s2))
-    onSetScore(score1 ?? 0, s2)
+    // If s2 hits target, clamp s1 below target
+    const s1 = targetScore != null && s2 === targetScore && (score1 ?? 0) >= targetScore
+      ? targetScore - 1
+      : score1 ?? 0
+    onSetScore(s1, s2)
   }
 
   return (
@@ -346,11 +360,15 @@ function IndependentScoreCourtLayout({
           </div>
           <ScoreInput
             value={text1}
-            max={pickerMax}
+            max={max1}
             color="blue"
             disabled={disabled}
             onChange={handleChange1}
-            onSelect={s1 => { onSetScore(s1, score2 ?? 0) }}
+            onSelect={s1 => {
+              const s2 = targetScore != null && s1 === targetScore && (score2 ?? 0) >= targetScore
+                ? targetScore - 1 : score2 ?? 0
+              onSetScore(s1, s2)
+            }}
             onClear={onClearScore}
           />
         </div>
@@ -358,11 +376,15 @@ function IndependentScoreCourtLayout({
         <div className="flex-1 flex items-center justify-center gap-2">
           <ScoreInput
             value={text2}
-            max={pickerMax}
+            max={max2}
             color="red"
             disabled={disabled}
             onChange={handleChange2}
-            onSelect={s2 => { onSetScore(score1 ?? 0, s2) }}
+            onSelect={s2 => {
+              const s1 = targetScore != null && s2 === targetScore && (score1 ?? 0) >= targetScore
+                ? targetScore - 1 : score1 ?? 0
+              onSetScore(s1, s2)
+            }}
             onClear={onClearScore}
           />
           <div className="flex flex-col items-center justify-around h-full">
