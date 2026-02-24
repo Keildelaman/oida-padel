@@ -45,7 +45,7 @@ export function RoundControls({
           </Button>
         )}
         {(isLastRound || (openEnded && isComplete)) && (
-          <Button variant="primary" onClick={onFinish}>
+          <Button variant="primary" onClick={onFinish} disabled={!isComplete && !isConfirmed}>
             {t('roundControls.finishTournament')}
           </Button>
         )}
