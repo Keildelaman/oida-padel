@@ -1,7 +1,6 @@
 import { useTournament, getLeaderboard } from '../state'
-import { Card, Button } from '../components/shared'
-import { PodiumGraphic } from '../components/leaderboard/PodiumGraphic'
-import { LeaderboardTable } from '../components/leaderboard/LeaderboardTable'
+import { Button } from '../components/shared'
+import { LeaderboardView } from '../components/leaderboard/LeaderboardView'
 import { leaderboardToCsv, leaderboardToText, downloadFile } from '../utils/export'
 import { DEFAULT_TARGET_SCORE, DEFAULT_MATCH_DURATION_MINUTES } from '../constants'
 import { useT } from '../i18n'
@@ -36,8 +35,8 @@ export function LeaderboardPage() {
   }
 
   const leaderboard = getLeaderboard(tournament)
-  const top3 = leaderboard.slice(0, 3)
   const completedRounds = tournament.rounds.filter(r => r.completed).length
+  const playerNames = new Map(tournament.players.map(p => [p.id, p.name]))
 
   return (
     <div className="space-y-6">
@@ -66,41 +65,15 @@ export function LeaderboardPage() {
         </div>
       </div>
 
-      {/* Summary */}
-      <Card>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
-          <div>
-            <div className="text-2xl font-bold text-primary-surface">{tournament.players.length}</div>
-            <div className="text-xs text-text-muted">{t('leaderboard.players')}</div>
-          </div>
-          <div>
-            <div className="text-2xl font-bold text-primary-surface">{completedRounds}</div>
-            <div className="text-xs text-text-muted">{t('leaderboard.roundsPlayed')}</div>
-          </div>
-          <div>
-            <div className="text-2xl font-bold text-primary-surface">{tournament.courts}</div>
-            <div className="text-xs text-text-muted">{t('leaderboard.courts')}</div>
-          </div>
-          <div>
-            <div className="text-2xl font-bold text-primary-surface">
-              {scoringLabel(tournament.scoringConfig, t)}
-            </div>
-            <div className="text-xs text-text-muted">{t('leaderboard.scoring')}</div>
-          </div>
-        </div>
-      </Card>
-
-      {/* Podium */}
-      {tournament.phase === 'finished' && top3.length >= 3 && (
-        <Card>
-          <PodiumGraphic top3={top3} />
-        </Card>
-      )}
-
-      {/* Table */}
-      <Card padding={false}>
-        <LeaderboardTable entries={leaderboard} tournament={tournament} />
-      </Card>
+      <LeaderboardView
+        entries={leaderboard}
+        playerNames={playerNames}
+        playerCount={tournament.players.length}
+        completedRounds={completedRounds}
+        courts={tournament.courts}
+        scoringLabel={scoringLabel(tournament.scoringConfig, t)}
+        showPodium={tournament.phase === 'finished'}
+      />
 
       {/* Actions */}
       {tournament.phase === 'finished' && (

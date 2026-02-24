@@ -7,6 +7,7 @@ import { SimulatorPage } from '../../pages/SimulatorPage'
 import { PlayersPage } from '../../pages/PlayersPage'
 import { PlayerDetailPage } from '../../pages/PlayerDetailPage'
 import { PlayerGroupsPage } from '../../pages/PlayerGroupsPage'
+import { TournamentResultPage } from '../../pages/TournamentResultPage'
 
 export function AppShell() {
   const { state } = useTournament()
@@ -20,6 +21,7 @@ export function AppShell() {
       case 'playerDetail': return <PlayerDetailPage />
       case 'playerGroups': return <PlayerGroupsPage />
       case 'simulator': return <SimulatorPage />
+      case 'tournamentResult': return <TournamentResultPage />
     }
   }
 

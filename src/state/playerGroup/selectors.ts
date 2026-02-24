@@ -1,4 +1,4 @@
-import type { PlayerGroup, RegisteredPlayer, TournamentRecord } from '../../types'
+import type { PlayerGroup, RegisteredPlayer, TournamentRecord, LeaderboardEntry, PlayerStats, RoundResult, ScoringMode } from '../../types'
 import type { PlayerGroupState } from './actions'
 
 // --- Phase 1: Basic lookups ---
@@ -302,4 +302,135 @@ export function getPlayerTournamentHistory(group: PlayerGroup, playerId: string)
       }
     })
     .sort((a, b) => b.date.localeCompare(a.date))
+}
+
+// --- Reconstruct full leaderboard from historical tournament record ---
+
+function usesPointScoring(mode: ScoringMode): boolean {
+  return mode === 'points' || mode === 'pointsToWin' || mode === 'timed'
+}
+
+export function reconstructLeaderboard(record: TournamentRecord, group: PlayerGroup): LeaderboardEntry[] {
+  // Build player name map from group (fallback for deleted players)
+  const playerNameMap = new Map<string, string>()
+  for (const p of group.players) playerNameMap.set(p.id, p.name)
+
+  const scoringMode = record.config.scoringMode as ScoringMode
+  const pointMode = usesPointScoring(scoringMode)
+
+  // Initialize stats per player
+  const statsMap = new Map<string, PlayerStats>()
+  for (const pid of record.playerIds) {
+    statsMap.set(pid, {
+      playerId: pid,
+      playerName: playerNameMap.get(pid) ?? 'Player',
+      points: 0,
+      wins: 0,
+      losses: 0,
+      gamesPlayed: 0,
+      gamesPaused: 0,
+      pointDifferential: 0,
+      roundResults: [],
+    })
+  }
+
+  // Group matches by round
+  const matchesByRound = new Map<number, typeof record.matches>()
+  for (const match of record.matches) {
+    const list = matchesByRound.get(match.round) ?? []
+    list.push(match)
+    matchesByRound.set(match.round, list)
+  }
+
+  // Determine all round numbers
+  const roundNumbers = Array.from(matchesByRound.keys()).sort((a, b) => a - b)
+
+  for (const roundNum of roundNumbers) {
+    const roundMatches = matchesByRound.get(roundNum)!
+
+    // Find players who played this round
+    const playedThisRound = new Set<string>()
+    for (const match of roundMatches) {
+      for (const pid of [...match.team1.playerIds, ...match.team2.playerIds]) {
+        playedThisRound.add(pid)
+      }
+    }
+
+    // Mark paused players
+    for (const pid of record.playerIds) {
+      if (!playedThisRound.has(pid)) {
+        const stats = statsMap.get(pid)!
+        stats.gamesPaused++
+        stats.roundResults.push({ roundNumber: roundNum, paused: true })
+      }
+    }
+
+    // Process each match
+    for (const match of roundMatches) {
+      const allIds = [...match.team1.playerIds, ...match.team2.playerIds]
+
+      for (const pid of allIds) {
+        const stats = statsMap.get(pid)!
+        stats.gamesPlayed++
+
+        const isTeam1 = match.team1.playerIds.includes(pid)
+        const team = isTeam1 ? match.team1.playerIds : match.team2.playerIds
+        const partnerId = team.find(id => id !== pid)!
+        const opponentIds: [string, string] = isTeam1
+          ? [match.team2.playerIds[0], match.team2.playerIds[1]]
+          : [match.team1.playerIds[0], match.team1.playerIds[1]]
+
+        const roundResult: RoundResult = {
+          roundNumber: roundNum,
+          paused: false,
+          courtIndex: match.court,
+          partnerId,
+          opponentIds,
+        }
+
+        if (pointMode) {
+          const myScore = isTeam1 ? match.team1.score : match.team2.score
+          const theirScore = isTeam1 ? match.team2.score : match.team1.score
+          stats.points += myScore
+          stats.pointDifferential += myScore - theirScore
+          roundResult.pointsScored = myScore
+          roundResult.pointsConceded = theirScore
+
+          if (myScore > theirScore) {
+            stats.wins++
+            roundResult.won = true
+          } else if (myScore < theirScore) {
+            stats.losses++
+            roundResult.won = false
+          }
+        } else {
+          // Win/loss mode
+          if (match.winner != null) {
+            const myTeam = isTeam1 ? 1 : 2
+            if (match.winner === myTeam) {
+              stats.wins++
+              stats.points += 1
+              roundResult.won = true
+            } else {
+              stats.losses++
+              roundResult.won = false
+            }
+          }
+        }
+
+        stats.roundResults.push(roundResult)
+      }
+    }
+  }
+
+  // Sort and rank — same logic as getLeaderboard
+  const statsArray = Array.from(statsMap.values())
+  statsArray.sort((a, b) => {
+    if (b.points !== a.points) return b.points - a.points
+    if (b.wins !== a.wins) return b.wins - a.wins
+    if (b.pointDifferential !== a.pointDifferential) return b.pointDifferential - a.pointDifferential
+    return a.playerName.localeCompare(b.playerName)
+  })
+
+  return statsArray.map((s, i) => ({ ...s, rank: i + 1 }))
 }

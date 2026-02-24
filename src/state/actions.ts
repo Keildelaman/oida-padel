@@ -1,6 +1,6 @@
 import type { Player, ScoringConfig, Round } from '../types'
 
-export type Page = 'setup' | 'round' | 'leaderboard' | 'players' | 'playerDetail' | 'playerGroups' | 'simulator'
+export type Page = 'setup' | 'round' | 'leaderboard' | 'players' | 'playerDetail' | 'playerGroups' | 'simulator' | 'tournamentResult'
 
 export type TournamentAction =
   | { type: 'START_TOURNAMENT'; payload: { name: string; players: Player[]; courts: number; totalRounds: number; scoringConfig: ScoringConfig; rounds: Round[]; openEnded?: boolean; courtNames?: string[] } }
@@ -16,6 +16,7 @@ export type TournamentAction =
   | { type: 'SAVE_SETUP_DRAFT'; payload: import('../types').SetupDraft }
   | { type: 'CLEAR_MATCH_SCORES'; payload: { roundNumber: number; courtIndex: number } }
   | { type: 'VIEW_PLAYER_DETAIL'; payload: { playerId: string } }
+  | { type: 'VIEW_TOURNAMENT_RESULT'; payload: { tournamentId: string } }
 
 export interface TournamentState {
   tournament: import('../types').Tournament | null
@@ -23,4 +24,5 @@ export interface TournamentState {
   viewingRound: number
   setupDraft: import('../types').SetupDraft | null
   viewingPlayerId: string | null
+  viewingTournamentId: string | null
 }

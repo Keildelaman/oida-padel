@@ -281,6 +281,11 @@ export const de: TranslationMap = {
   'round.excludeFromRegistry': 'Spa\u00df- / Testspiel \u2014 nicht in Spielerstatistik speichern',
   'round.excludeHint': 'Ergebnisse werden nicht in die Spielerstatistik einflie\u00dfen',
 
+  // Tournament Result
+  'tournamentResult.back': '\u2190 Zur\u00fcck zu {name}',
+  'tournamentResult.backToPlayers': '\u2190 Zur\u00fcck zu Spieler',
+  'tournamentResult.notFound': 'Turnier nicht gefunden.',
+
   // Validation
   'validation.minPlayers': 'Mindestens {min} Spieler erforderlich',
   'validation.maxPlayers': 'Maximal {max} Spieler erlaubt',

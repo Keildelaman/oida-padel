@@ -31,6 +31,8 @@ export function buildTournamentRecord(tournament: Tournament, leaderboard: Leade
       scoringMode: tournament.scoringConfig.mode,
       pointsPerMatch: tournament.scoringConfig.pointsPerMatch,
       openEnded: tournament.openEnded ?? false,
+      targetScore: tournament.scoringConfig.targetScore,
+      matchDurationMinutes: tournament.scoringConfig.matchDurationMinutes,
     },
     playerIds: tournament.players.map(p => p.id),
     matches,

@@ -1,17 +1,17 @@
 import { useState } from 'react'
-import type { LeaderboardEntry, Tournament } from '../../types'
+import type { LeaderboardEntry } from '../../types'
 import { Badge } from '../shared'
 import { useT } from '../../i18n'
 
 interface LeaderboardTableProps {
   entries: LeaderboardEntry[]
-  tournament: Tournament
+  playerNames: Map<string, string>
 }
 
-export function LeaderboardTable({ entries, tournament }: LeaderboardTableProps) {
+export function LeaderboardTable({ entries, playerNames }: LeaderboardTableProps) {
   const { t } = useT()
   const [expandedId, setExpandedId] = useState<string | null>(null)
-  const playerMap = new Map(tournament.players.map(p => [p.id, p.name]))
+  const playerMap = playerNames
 
   const rankBadge = (rank: number) => {
     if (rank === 1) return <Badge color="gold">{t('table.1st')}</Badge>

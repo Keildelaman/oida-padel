@@ -272,7 +272,8 @@ export function PlayerDetailPage() {
             {tournamentHistory.map(th => (
               <div
                 key={th.tournamentId}
-                className={`flex items-center justify-between gap-3 p-3 rounded-lg bg-white/[0.02] ${th.excluded ? 'opacity-50' : ''}`}
+                onClick={() => dispatch({ type: 'VIEW_TOURNAMENT_RESULT', payload: { tournamentId: th.tournamentId } })}
+                className={`flex items-center justify-between gap-3 p-3 rounded-lg bg-white/[0.02] cursor-pointer hover:bg-white/[0.04] transition-colors ${th.excluded ? 'opacity-50' : ''}`}
               >
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
@@ -286,25 +287,33 @@ export function PlayerDetailPage() {
                     <span>{th.points}pts</span>
                   </div>
                 </div>
-                <button
-                  onClick={() => pgDispatch({ type: 'PG_TOGGLE_TOURNAMENT_EXCLUDED', payload: { tournamentId: th.tournamentId } })}
-                  className={`p-1.5 rounded transition-colors shrink-0 ${
-                    th.excluded
-                      ? 'text-text-muted hover:text-accent hover:bg-white/5'
-                      : 'text-text-muted hover:text-yellow-400 hover:bg-yellow-500/10'
-                  }`}
-                  title={th.excluded ? t('players.unarchive') : t('players.excluded')}
-                >
-                  {th.excluded ? (
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
-                      <path fillRule="evenodd" d="M15.312 11.424a5.5 5.5 0 01-9.201 2.466l-.312-.311h2.433a.75.75 0 000-1.5H4.598a.75.75 0 00-.75.75v3.634a.75.75 0 001.5 0v-2.033l.312.312a7 7 0 0011.712-3.138.75.75 0 00-1.06-.18zm-9.624-2.848a5.5 5.5 0 019.201-2.466l.312.311H12.77a.75.75 0 000 1.5h3.634a.75.75 0 00.75-.75V3.537a.75.75 0 00-1.5 0v2.033l-.312-.312A7 7 0 003.63 8.396a.75.75 0 001.06.18z" clipRule="evenodd" />
-                    </svg>
-                  ) : (
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
-                      <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
-                    </svg>
-                  )}
-                </button>
+                <div className="flex items-center gap-1 shrink-0">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      pgDispatch({ type: 'PG_TOGGLE_TOURNAMENT_EXCLUDED', payload: { tournamentId: th.tournamentId } })
+                    }}
+                    className={`p-1.5 rounded transition-colors ${
+                      th.excluded
+                        ? 'text-text-muted hover:text-accent hover:bg-white/5'
+                        : 'text-text-muted hover:text-yellow-400 hover:bg-yellow-500/10'
+                    }`}
+                    title={th.excluded ? t('players.unarchive') : t('players.excluded')}
+                  >
+                    {th.excluded ? (
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                        <path fillRule="evenodd" d="M15.312 11.424a5.5 5.5 0 01-9.201 2.466l-.312-.311h2.433a.75.75 0 000-1.5H4.598a.75.75 0 00-.75.75v3.634a.75.75 0 001.5 0v-2.033l.312.312a7 7 0 0011.712-3.138.75.75 0 00-1.06-.18zm-9.624-2.848a5.5 5.5 0 019.201-2.466l.312.311H12.77a.75.75 0 000 1.5h3.634a.75.75 0 00.75-.75V3.537a.75.75 0 00-1.5 0v2.033l-.312-.312A7 7 0 003.63 8.396a.75.75 0 001.06.18z" clipRule="evenodd" />
+                      </svg>
+                    ) : (
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                        <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+                      </svg>
+                    )}
+                  </button>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-text-muted">
+                    <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
+                  </svg>
+                </div>
               </div>
             ))}
           </div>

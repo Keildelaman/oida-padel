@@ -34,7 +34,7 @@ export function Header() {
                 if (item.page === 'leaderboard' && state.tournament?.phase !== 'finished') return null
                 if (item.page === 'round' && state.tournament?.phase === 'finished') return null
                 if (item.page === 'playerDetail') return null
-                const isActive = state.currentPage === item.page || (item.page === 'players' && state.currentPage === 'playerDetail')
+                const isActive = state.currentPage === item.page || (item.page === 'players' && (state.currentPage === 'playerDetail' || state.currentPage === 'tournamentResult'))
                 return (
                   <button
                     key={item.page}

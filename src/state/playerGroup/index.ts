@@ -3,7 +3,7 @@ export type { PlayerGroupState, PlayerGroupAction } from './actions'
 export { getActiveGroup, getRegisteredPlayerByName, getNonArchivedPlayers } from './selectors'
 export {
   getPlayerOverviewStats, getPlayerDetailStats, getPlayerPartnerStats,
-  getPlayerOpponentStats, getPlayerTournamentHistory,
+  getPlayerOpponentStats, getPlayerTournamentHistory, reconstructLeaderboard,
 } from './selectors'
 export type {
   PlayerOverviewStats, PlayerDetailStats, PartnerStats,

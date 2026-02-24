@@ -5,7 +5,7 @@ export { PlayerGroupProvider, usePlayerGroup } from './playerGroup'
 export { getActiveGroup, getRegisteredPlayerByName, getNonArchivedPlayers } from './playerGroup'
 export {
   getPlayerOverviewStats, getPlayerDetailStats, getPlayerPartnerStats,
-  getPlayerOpponentStats, getPlayerTournamentHistory,
+  getPlayerOpponentStats, getPlayerTournamentHistory, reconstructLeaderboard,
 } from './playerGroup'
 export type {
   PlayerOverviewStats, PlayerDetailStats, PartnerStats,

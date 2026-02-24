@@ -281,6 +281,11 @@ export const en: TranslationMap = {
   'round.excludeFromRegistry': "Fun / test game — don't save to player stats",
   'round.excludeHint': 'Results will not count toward player statistics',
 
+  // Tournament Result
+  'tournamentResult.back': '\u2190 Back to {name}',
+  'tournamentResult.backToPlayers': '\u2190 Back to Players',
+  'tournamentResult.notFound': 'Tournament not found.',
+
   // Validation
   'validation.minPlayers': 'At least {min} players required',
   'validation.maxPlayers': 'Maximum {max} players allowed',

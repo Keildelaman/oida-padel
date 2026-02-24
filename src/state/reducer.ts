@@ -8,6 +8,7 @@ export const initialState: TournamentState = {
   viewingRound: 1,
   setupDraft: null,
   viewingPlayerId: null,
+  viewingTournamentId: null,
 }
 
 export function tournamentReducer(state: TournamentState, action: TournamentAction): TournamentState {
@@ -145,6 +146,10 @@ export function tournamentReducer(state: TournamentState, action: TournamentActi
 
     case 'VIEW_PLAYER_DETAIL': {
       return { ...state, currentPage: 'playerDetail', viewingPlayerId: action.payload.playerId }
+    }
+
+    case 'VIEW_TOURNAMENT_RESULT': {
+      return { ...state, currentPage: 'tournamentResult', viewingTournamentId: action.payload.tournamentId }
     }
 
     default:

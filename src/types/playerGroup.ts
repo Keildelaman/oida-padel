@@ -24,6 +24,8 @@ export interface TournamentRecord {
     scoringMode: string
     pointsPerMatch: number
     openEnded: boolean
+    targetScore?: number
+    matchDurationMinutes?: number
   }
   playerIds: string[]
   matches: MatchRecord[]
